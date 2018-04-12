@@ -9,4 +9,6 @@
 
     <string name="up">Up</string>
 
+    <string name="twice_press_to_exit">Press once again to exit.</string>
+
 </resources>
