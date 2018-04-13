@@ -8,7 +8,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/aplMovieDetail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
@@ -54,7 +53,6 @@
             android:orientation="vertical">
 
             <android.support.v7.widget.CardView
-                android:id="@+id/cvMovieDetailGeneralDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/ArticleDetailCardViewAppearance" >
@@ -70,19 +68,30 @@
                     <TextView
                         android:id="@+id/article_byline"
                         style="?android:attr/textAppearanceSmall"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:layout_marginStart="16dp"
+                        android:textColor="@color/secondaryTextColor" />
+
+                    <View
+                        android:layout_width="20dp"
+                        android:layout_height="1dp"
                         android:layout_gravity="end"
-                        android:layout_marginEnd="8dp"
-                        android:textColor="#8fff" />
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@color/secondaryTextColor"/>
 
                     <TextView
                         android:id="@+id/article_body"
                         style="?android:attr/textAppearanceMedium"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/detail_inner_horiz_margin"
-                        android:layout_marginRight="@dimen/detail_inner_horiz_margin"
+                        android:layout_marginStart="@dimen/detail_inner_horiz_margin"
+                        android:layout_marginEnd="@dimen/detail_inner_horiz_margin"
+                        android:layout_marginTop="32dp"
                         android:paddingBottom="@dimen/detail_body_bottom_margin"
                         android:textColor="@color/primaryTextColor"
                         android:textColorLink="@color/colorAccent"

@@ -22,10 +22,12 @@
     <color name="colorPrimaryDark">#F57C00</color>
     <color name="colorAccent">#FF4081</color>
     <color name="primaryTextColor">#212121</color>
+    <color name="secondaryTextColor">#757575</color>
 
     <color name="swipeColor1">#FF9800</color>
     <color name="swipeColor2">#E91E63</color>
     <color name="swipeColor3">#9C27B0</color>
     <color name="detailTint">#AAEF9A9A</color>
     <color name="colorWhite">#ffffff</color>
+    <color name="colorBlack">#000000</color>
 </resources>
