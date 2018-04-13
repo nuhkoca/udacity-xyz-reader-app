@@ -26,4 +26,19 @@
         <item name="windowActionBar">false</item>
     </style>
 
+    <!-- Collapsing Title Style -->
+    <style name="CollapsingTextAppearance" parent="Base.TextAppearance.AppCompat.Widget.ActionBar.Title"/>
+    <style name="CollapsingTextAppearance.Inverse">
+        <item name="android:textSize">30sp</item>
+    </style>
+
+    <!-- Detail CardView Style-->
+    <style name="ArticleDetailCardViewAppearance">
+        <item name="cardBackgroundColor">@color/colorWhite</item>
+        <item name="contentPadding">16dp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="cardCornerRadius">4dp</item>
+        <item name="cardElevation">4dp</item>
+    </style>
+
 </resources>
