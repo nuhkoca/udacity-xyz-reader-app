@@ -40,7 +40,7 @@
         <item name="contentPadding">16dp</item>
         <item name="android:layout_margin">8dp</item>
         <item name="cardCornerRadius">4dp</item>
-        <item name="cardElevation">4dp</item>
+        <item name="cardElevation">2dp</item>
     </style>
 
     <!-- Detail Land CardView Style-->
@@ -51,11 +51,37 @@
         <item name="android:layout_marginBottom">8dp</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:shape">rectangle</item>
-        <item name="cardElevation">4dp</item>
+        <item name="cardElevation">2dp</item>
     </style>
 
+
+    <!-- List RecyclerView Style-->
+    <style name="ListRecyclerViewAppearance">
+        <item name="android:clipToPadding">false</item>
+        <item name="android:scrollbarStyle">outsideOverlay</item>
+        <item name="android:paddingLeft">@dimen/list_side_margin</item>
+        <item name="android:paddingRight">@dimen/list_side_margin</item>
+        <item name="android:paddingBottom">@dimen/list_rv_padding_bottom</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    </style>
+
+
+    <!-- Toolbar Style -->
     <style name="ToolBarWithNavigationBack">
         <item name="navigationIcon" tools:ignore="PrivateResource">@drawable/abc_ic_ab_back_material</item>
+    </style>
+
+    <!-- List CardView Style -->
+    <style name="ListCardViewAppearance">
+        <item name="android:layout_marginLeft">4dp</item>
+        <item name="android:layout_marginRight">4dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:clickable">true</item>
+        <item name="cardCornerRadius">4dp</item>
+        <item name="android:focusable">true</item>
+        <item name="cardElevation">2dp</item>
+        <item name="android:foreground">?selectableItemBackground</item>
     </style>
 
 </resources>

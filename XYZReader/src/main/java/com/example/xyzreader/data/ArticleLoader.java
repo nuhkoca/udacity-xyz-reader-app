@@ -1,6 +1,7 @@
 package com.example.xyzreader.data;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.support.v4.content.CursorLoader;
 
@@ -8,6 +9,9 @@ import android.support.v4.content.CursorLoader;
  * Helper for loading a list of articles or a single article.
  */
 public class ArticleLoader extends CursorLoader {
+
+    private Cursor mTaskData = null;
+
     public static ArticleLoader newAllArticlesInstance(Context context) {
         return new ArticleLoader(context, ItemsContract.Items.buildDirUri());
     }
@@ -40,5 +44,19 @@ public class ArticleLoader extends CursorLoader {
         int PHOTO_URL = 5;
         int ASPECT_RATIO = 6;
         int BODY = 7;
+    }
+
+    @Override
+    protected void onStartLoading() {
+        if (mTaskData != null) {
+            deliverResult(mTaskData);
+        } else {
+            forceLoad();
+        }
+    }
+
+    public void deliverResult(Cursor data) {
+        mTaskData = data;
+        super.deliverResult(data);
     }
 }

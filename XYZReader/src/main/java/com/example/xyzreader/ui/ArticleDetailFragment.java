@@ -93,7 +93,12 @@ public class ArticleDetailFragment extends Fragment implements
         // the fragment's onCreate may cause the same LoaderManager to be dealt to multiple
         // fragments because their mIndex is -1 (haven't been added to the activity yet). Thus,
         // we do this in onActivityCreated.
-        getLoaderManager().initLoader(0, null, this);
+
+        if (getActivity() != null) {
+            getActivity().getSupportLoaderManager().initLoader(1, null, this);
+        }
+
+
     }
 
     @Override
@@ -194,17 +199,24 @@ public class ArticleDetailFragment extends Fragment implements
                 prepareImage(mPhotoView);
             }
 
-        } else {
-            mRootView.setVisibility(View.GONE);
+        }
+    }
 
-            if (!getResources().getBoolean(R.bool.isLand)) {
-                titleView.setTitle("N/A");
-            } else {
-                articleTitleLand.setText("N/A");
-            }
+    @Override
+    public void onResume() {
+        super.onResume();
 
-            bylineView.setText("N/A");
-            bodyView.setText("N/A");
+        if (getActivity() != null) {
+            getActivity().getSupportLoaderManager().restartLoader(1, null, this);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        if (getActivity() != null) {
+            getActivity().getSupportLoaderManager().destroyLoader(1);
         }
     }
 

@@ -34,12 +34,10 @@ public class ArticleDetailActivity extends AppCompatActivity
             hideStatusBarOnly();
         }
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        getSupportLoaderManager().initLoader(2, null, this);
 
-        if (savedInstanceState == null) {
-            if (getIntent() != null && getIntent().getData() != null) {
-                mStartId = ItemsContract.Items.getItemId(getIntent().getData());
-            }
+        if (getIntent() != null && getIntent().getData() != null) {
+            mStartId = ItemsContract.Items.getItemId(getIntent().getData());
         }
     }
 
@@ -81,7 +79,14 @@ public class ArticleDetailActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
 
-        getSupportLoaderManager().restartLoader(0, null, this);
+        getSupportLoaderManager().restartLoader(2, null, this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        getSupportLoaderManager().destroyLoader(2);
     }
 
     public void hideStatusBarOnly() {
