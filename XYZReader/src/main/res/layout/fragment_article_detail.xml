@@ -22,19 +22,19 @@
             app:expandedTitleTextAppearance="@style/CollapsingTextAppearance.Inverse"
             app:contentScrim="?colorPrimary">
 
-            <ImageView
+            <com.flaviofaria.kenburnsview.KenBurnsView
                 android:id="@+id/poster"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:tint="@color/detailTint"
-                android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"/>
 
             <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbarDetail"
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@null"
+                style="@style/ToolBarWithNavigationBack"
                 app:layout_collapseMode="pin" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -70,16 +70,26 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="end"
+                        android:layout_marginTop="8dp"
                         android:layout_marginEnd="16dp"
                         android:layout_marginStart="16dp"
                         android:textColor="@color/secondaryTextColor" />
 
                     <View
-                        android:layout_width="20dp"
+                        android:layout_width="40dp"
                         android:layout_height="1dp"
                         android:layout_gravity="end"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginEnd="16dp"
                         android:background="@color/secondaryTextColor"/>
+
+                    <View
+                        android:layout_width="50dp"
+                        android:layout_height="1dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="72dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@color/colorPrimary"/>
 
                     <TextView
                         android:id="@+id/article_body"
@@ -88,7 +98,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/detail_inner_horiz_margin"
                         android:layout_marginEnd="@dimen/detail_inner_horiz_margin"
-                        android:layout_marginTop="32dp"
+                        android:layout_marginTop="16dp"
                         android:paddingBottom="@dimen/detail_body_bottom_margin"
                         android:textColor="@color/primaryTextColor"
                         android:textColorLink="@color/colorAccent"

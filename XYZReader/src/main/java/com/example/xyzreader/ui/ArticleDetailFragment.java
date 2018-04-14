@@ -2,14 +2,19 @@ package com.example.xyzreader.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.Loader;
+import android.support.v7.graphics.Palette;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
@@ -21,6 +26,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 
@@ -50,7 +59,7 @@ public class ArticleDetailFragment extends Fragment implements
     // Use default locale format
     private SimpleDateFormat outputFormat = new SimpleDateFormat();
     // Most time functions can only handle 1902 - 2037
-    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2,1,1);
+    private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -92,6 +101,21 @@ public class ArticleDetailFragment extends Fragment implements
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
 
+        Toolbar toolbar = mRootView.findViewById(R.id.toolbar);
+
+        if (getResources().getBoolean(R.bool.isLand)){
+            toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material);
+        }
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (getActivity() != null) {
+                    getActivity().onBackPressed();
+                }
+            }
+        });
+
         mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,10 +148,12 @@ public class ArticleDetailFragment extends Fragment implements
         }
 
         CollapsingToolbarLayout titleView = mRootView.findViewById(R.id.article_title);
+        final TextView articleTitleLand = mRootView.findViewById(R.id.article_title_land);
         TextView bylineView = mRootView.findViewById(R.id.article_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
         TextView bodyView = mRootView.findViewById(R.id.article_body);
         ImageView mPhotoView = mRootView.findViewById(R.id.poster);
+        final CardView cvDetailLand = mRootView.findViewById(R.id.cvDetailLand);
 
         bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
@@ -135,7 +161,14 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setAlpha(0);
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
-            titleView.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
+
+            if (!getResources().getBoolean(R.bool.isLand)) {
+                titleView.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
+            }else {
+                articleTitleLand.setText(mCursor.getString(ArticleLoader.Query.TITLE));
+            }
+
+
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
                 bylineView.setText(Html.fromHtml(
@@ -150,25 +183,48 @@ public class ArticleDetailFragment extends Fragment implements
                 // If date is before 1902, just show the string
                 bylineView.setText(Html.fromHtml(
                         outputFormat.format(publishedDate)
-                        + mCursor.getString(ArticleLoader.Query.AUTHOR)));
+                                + mCursor.getString(ArticleLoader.Query.AUTHOR)));
 
             }
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
 
             //TODO replace with Glide
-           Glide.with(getActivity().getApplicationContext())
+            Glide.with(getActivity().getApplicationContext())
+                    .asBitmap()
                     .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
-                    .into(mPhotoView);
+                    .listener(new RequestListener<Bitmap>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                            return false;
+                        }
 
-           Log.d("TITLE", mCursor.getString(ArticleLoader.Query.TITLE));
-           Log.d("BODY", mCursor.getString(ArticleLoader.Query.BODY));
-           Log.d("AUTHOR", mCursor.getString(ArticleLoader.Query.AUTHOR));
-           Log.d("THUMB", mCursor.getString(ArticleLoader.Query.PHOTO_URL));
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(@NonNull Palette palette) {
+                                    if (palette.getDominantSwatch() != null) {
+                                        cvDetailLand.setCardBackgroundColor(palette.getDominantSwatch().getRgb());
+                                        articleTitleLand.setTextColor(palette.getDominantSwatch().getBodyTextColor());
+                                    }
+                                }
+                            });
+
+                            return false;
+                        }
+                    })
+                    .into(mPhotoView);
 
         } else {
             mRootView.setVisibility(View.GONE);
-            titleView.setTitle("N/A");
-            bylineView.setText("N/A" );
+
+            if (!getResources().getBoolean(R.bool.isLand)) {
+                titleView.setTitle("N/A");
+            }else {
+                articleTitleLand.setText("N/A");
+            }
+
+            bylineView.setText("N/A");
             bodyView.setText("N/A");
         }
     }
