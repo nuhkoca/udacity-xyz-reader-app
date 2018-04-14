@@ -77,6 +77,13 @@ public class ArticleDetailActivity extends AppCompatActivity
         mCursor = null;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        getSupportLoaderManager().restartLoader(0, null, this);
+    }
+
     public void hideStatusBarOnly() {
         Window decorWindow = getWindow();
 

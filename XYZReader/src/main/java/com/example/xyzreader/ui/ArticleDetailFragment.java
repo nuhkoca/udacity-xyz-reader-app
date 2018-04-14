@@ -103,7 +103,7 @@ public class ArticleDetailFragment extends Fragment implements
 
         Toolbar toolbar = mRootView.findViewById(R.id.toolbar);
 
-        if (getResources().getBoolean(R.bool.isLand)){
+        if (getResources().getBoolean(R.bool.isLand)) {
             toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material);
         }
 
@@ -121,7 +121,7 @@ public class ArticleDetailFragment extends Fragment implements
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(Objects.requireNonNull(getActivity()))
                         .setType("text/plain")
-                        .setText("Some sample text")
+                        .setText(String.format(getString(R.string.action_share_text), mCursor.getString(ArticleLoader.Query.AUTHOR)))
                         .getIntent(), getString(R.string.action_share)));
             }
         });
@@ -164,7 +164,7 @@ public class ArticleDetailFragment extends Fragment implements
 
             if (!getResources().getBoolean(R.bool.isLand)) {
                 titleView.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
-            }else {
+            } else {
                 articleTitleLand.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             }
 
@@ -188,39 +188,18 @@ public class ArticleDetailFragment extends Fragment implements
             }
             bodyView.setText(Html.fromHtml(mCursor.getString(ArticleLoader.Query.BODY).replaceAll("(\r\n|\n)", "<br />")));
 
-            //TODO replace with Glide
-            Glide.with(getActivity().getApplicationContext())
-                    .asBitmap()
-                    .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
-                    .listener(new RequestListener<Bitmap>() {
-                        @Override
-                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                            return false;
-                        }
-
-                        @Override
-                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-                                @Override
-                                public void onGenerated(@NonNull Palette palette) {
-                                    if (palette.getDominantSwatch() != null) {
-                                        cvDetailLand.setCardBackgroundColor(palette.getDominantSwatch().getRgb());
-                                        articleTitleLand.setTextColor(palette.getDominantSwatch().getBodyTextColor());
-                                    }
-                                }
-                            });
-
-                            return false;
-                        }
-                    })
-                    .into(mPhotoView);
+            if (getResources().getBoolean(R.bool.isLand)) {
+                prepareImage(cvDetailLand, articleTitleLand, mPhotoView);
+            } else {
+                prepareImage(mPhotoView);
+            }
 
         } else {
             mRootView.setVisibility(View.GONE);
 
             if (!getResources().getBoolean(R.bool.isLand)) {
                 titleView.setTitle("N/A");
-            }else {
+            } else {
                 articleTitleLand.setText("N/A");
             }
 
@@ -258,5 +237,40 @@ public class ArticleDetailFragment extends Fragment implements
     public void onLoaderReset(@NonNull Loader<Cursor> cursorLoader) {
         mCursor = null;
         bindViews();
+    }
+
+    private void prepareImage(final CardView cvDetailLand, final TextView articleTitleLand, ImageView mPhotoView) {
+        Glide.with(getActivity().getApplicationContext())
+                .asBitmap()
+                .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
+                .listener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                        Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                            @Override
+                            public void onGenerated(@NonNull Palette palette) {
+                                if (palette.getDominantSwatch() != null) {
+                                    cvDetailLand.setCardBackgroundColor(palette.getDominantSwatch().getRgb());
+                                    articleTitleLand.setTextColor(palette.getDominantSwatch().getBodyTextColor());
+                                }
+                            }
+                        });
+
+                        return false;
+                    }
+                })
+                .into(mPhotoView);
+    }
+
+    private void prepareImage(ImageView mPhotoView) {
+        Glide.with(getActivity().getApplicationContext())
+                .asBitmap()
+                .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
+                .into(mPhotoView);
     }
 }
