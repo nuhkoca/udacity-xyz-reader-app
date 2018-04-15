@@ -62,12 +62,14 @@ public class ArticleDetailActivity extends AppCompatActivity
                 mCursor.moveToNext();
 
             }
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_article_detail, ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID)))
+                    .commit();
+
+
             mStartId = 0;
         }
-
-        getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragment_article_detail, ArticleDetailFragment.newInstance(mCursor.getLong(ArticleLoader.Query._ID)))
-                .commit();
     }
 
     @Override

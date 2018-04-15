@@ -124,7 +124,6 @@
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
         android:src="@drawable/ic_share"
-        android:layout_gravity="bottom|right|end"
-        tools:ignore="RtlHardcoded" />
+        android:layout_gravity="bottom|right|end" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
@@ -97,8 +98,6 @@ public class ArticleDetailFragment extends Fragment implements
         if (getActivity() != null) {
             getActivity().getSupportLoaderManager().initLoader(1, null, this);
         }
-
-
     }
 
     @Override
@@ -121,17 +120,17 @@ public class ArticleDetailFragment extends Fragment implements
             }
         });
 
-        mRootView.findViewById(R.id.share_fab).setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton share_fab = mRootView.findViewById(R.id.share_fab);
+        share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(Objects.requireNonNull(getActivity()))
-                        .setType("text/plain")
-                        .setText(String.format(getString(R.string.action_share_text), mCursor.getString(ArticleLoader.Query.AUTHOR)))
-                        .getIntent(), getString(R.string.action_share)));
+                    startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(Objects.requireNonNull(getActivity()))
+                            .setType("text/plain")
+                            .setText(String.format(getString(R.string.action_share_text),
+                                    mCursor.getString(ArticleLoader.Query.AUTHOR)))
+                            .getIntent(), getString(R.string.action_share)));
             }
         });
-
-        bindViews();
 
         return mRootView;
     }
@@ -198,7 +197,8 @@ public class ArticleDetailFragment extends Fragment implements
             } else {
                 prepareImage(mPhotoView);
             }
-
+        }else {
+            mRootView.setVisibility(View.GONE);
         }
     }
 
@@ -232,6 +232,7 @@ public class ArticleDetailFragment extends Fragment implements
             if (cursor != null) {
                 cursor.close();
             }
+
             return;
         }
 
@@ -248,7 +249,6 @@ public class ArticleDetailFragment extends Fragment implements
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> cursorLoader) {
         mCursor = null;
-        bindViews();
     }
 
     private void prepareImage(final CardView cvDetailLand, final TextView articleTitleLand, ImageView mPhotoView) {

@@ -129,7 +129,6 @@
         android:elevation="@dimen/fab_elevation"
         android:translationZ="@dimen/fab_press_translation_z"
         android:src="@drawable/ic_share"
-        android:layout_gravity="bottom|right|end"
-        tools:ignore="RtlHardcoded" />
+        android:layout_gravity="bottom|right|end" />
 
 </android.support.design.widget.CoordinatorLayout>
