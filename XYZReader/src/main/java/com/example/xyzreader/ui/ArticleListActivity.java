@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -30,17 +31,45 @@ import com.example.xyzreader.data.UpdaterService;
 public class ArticleListActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String TAG = ArticleListActivity.class.toString();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
 
     private long mBackPressed;
+
+    private static Parcelable mLayoutManagerState;
+    private static final String LAYOUT_MANAGER_STATE = "LAYOUT_MANAGER_STATE";
+
+    private StaggeredGridLayoutManager staggeredGridLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
+        setupSwipe();
+
+        mRecyclerView = findViewById(R.id.recycler_view);
+
+        getSupportLoaderManager().initLoader(0, null, this);
+
+        int columnCount = getResources().getInteger(R.integer.list_column_count);
+         staggeredGridLayoutManager = new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
+
+        if (savedInstanceState == null) {
+            refresh();
+        } else {
+            mLayoutManagerState = savedInstanceState.getParcelable(LAYOUT_MANAGER_STATE);
+            mRecyclerView.getLayoutManager().onRestoreInstanceState(mLayoutManagerState);
+        }
+
+    }
+
+    private void refresh() {
+        startService(new Intent(this, UpdaterService.class));
+    }
+
+    private void setupSwipe(){
         mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
 
         mSwipeRefreshLayout.setColorSchemeResources(
@@ -59,18 +88,6 @@ public class ArticleListActivity extends AppCompatActivity implements
                 }, 1500);
             }
         });
-
-        mRecyclerView = findViewById(R.id.recycler_view);
-
-        getSupportLoaderManager().initLoader(0, null, this);
-
-        if (savedInstanceState == null) {
-            refresh();
-        }
-    }
-
-    private void refresh() {
-        startService(new Intent(this, UpdaterService.class));
     }
 
     @Override
@@ -118,13 +135,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         mSwipeRefreshLayout.setRefreshing(mIsRefreshing);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        getSupportLoaderManager().restartLoader(0, null, this);
-    }
-
     @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
@@ -136,14 +146,32 @@ public class ArticleListActivity extends AppCompatActivity implements
         Adapter adapter = new Adapter(cursor);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
-        int columnCount = getResources().getInteger(R.integer.list_column_count);
-        StaggeredGridLayoutManager sglm =
-                new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(sglm);
+        mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         mRecyclerView.setAdapter(null);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        mLayoutManagerState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        getSupportLoaderManager().restartLoader(0, null, this);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(LAYOUT_MANAGER_STATE, mLayoutManagerState);
+
+        super.onSaveInstanceState(outState);
     }
 }

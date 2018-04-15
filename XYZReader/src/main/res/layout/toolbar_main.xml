@@ -8,6 +8,7 @@
             android:id="@+id/aplMain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:elevation="@dimen/app_bar_elevation"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <android.support.design.widget.CollapsingToolbarLayout
