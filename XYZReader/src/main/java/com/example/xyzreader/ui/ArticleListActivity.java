@@ -13,14 +13,15 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.widget.Toast;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.adapter.Adapter;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.UpdaterService;
+import com.example.xyzreader.util.ColumnCalculator;
 
 /**
  * An activity representing a list of Articles. This activity has different presentations for
@@ -39,22 +40,13 @@ public class ArticleListActivity extends AppCompatActivity implements
     private static Parcelable mLayoutManagerState;
     private static final String LAYOUT_MANAGER_STATE = "LAYOUT_MANAGER_STATE";
 
-    private StaggeredGridLayoutManager staggeredGridLayoutManager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_list);
 
         setupSwipe();
-
-        mRecyclerView = findViewById(R.id.recycler_view);
-
-        getSupportLoaderManager().initLoader(0, null, this);
-
-        int columnCount = getResources().getInteger(R.integer.list_column_count);
-         staggeredGridLayoutManager = new StaggeredGridLayoutManager(columnCount, StaggeredGridLayoutManager.VERTICAL);
-        mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
+        setupRecyclerView();
 
         if (savedInstanceState == null) {
             refresh();
@@ -63,13 +55,22 @@ public class ArticleListActivity extends AppCompatActivity implements
             mRecyclerView.getLayoutManager().onRestoreInstanceState(mLayoutManagerState);
         }
 
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
     private void refresh() {
         startService(new Intent(this, UpdaterService.class));
     }
 
-    private void setupSwipe(){
+    private void setupRecyclerView() {
+        mRecyclerView = findViewById(R.id.recycler_view);
+
+        int columnCount = ColumnCalculator.getOptimalNumberOfColumn(this);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
+        mRecyclerView.setLayoutManager(gridLayoutManager);
+    }
+
+    private void setupSwipe() {
         mSwipeRefreshLayout = findViewById(R.id.swipe_refresh_layout);
 
         mSwipeRefreshLayout.setColorSchemeResources(
@@ -146,7 +147,6 @@ public class ArticleListActivity extends AppCompatActivity implements
         Adapter adapter = new Adapter(cursor);
         adapter.setHasStableIds(true);
         mRecyclerView.setAdapter(adapter);
-        mRecyclerView.setLayoutManager(staggeredGridLayoutManager);
     }
 
     @Override
