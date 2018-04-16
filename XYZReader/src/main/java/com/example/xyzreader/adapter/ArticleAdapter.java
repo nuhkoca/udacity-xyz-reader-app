@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -25,8 +26,6 @@ import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
-import com.example.xyzreader.util.DynamicHeightNetworkImageView;
-import com.example.xyzreader.util.ImageLoaderHelper;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +35,7 @@ import java.util.Locale;
 
 import static com.android.volley.VolleyLog.TAG;
 
-public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
+public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
     private Cursor mCursor;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss", Locale.ENGLISH);
@@ -45,7 +44,7 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
-    public Adapter(Cursor cursor) {
+    public ArticleAdapter(Cursor cursor) {
         mCursor = cursor;
     }
 
@@ -107,10 +106,6 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
                             + "<br/>" + " by "
                             + mCursor.getString(ArticleLoader.Query.AUTHOR)));
         }
-        holder.thumbnailView.setImageUrl(
-                mCursor.getString(ArticleLoader.Query.THUMB_URL),
-                ImageLoaderHelper.getInstance(holder.cvItemList.getContext()).getImageLoader());
-        holder.thumbnailView.setAspectRatio(mCursor.getFloat(ArticleLoader.Query.ASPECT_RATIO));
 
         Glide.with(holder.thumbnailView.getContext())
                 .asBitmap()
@@ -145,11 +140,11 @@ public class Adapter extends RecyclerView.Adapter<Adapter.ViewHolder> {
         return mCursor.getCount();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        DynamicHeightNetworkImageView thumbnailView;
-        TextView titleView;
-        TextView subtitleView;
-        CardView cvItemList;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        private ImageView thumbnailView;
+        private TextView titleView;
+        private TextView subtitleView;
+        private CardView cvItemList;
 
         ViewHolder(View view) {
             super(view);

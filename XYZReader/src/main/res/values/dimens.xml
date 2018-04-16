@@ -8,13 +8,13 @@
     <dimen name="fab_press_translation_z">6dp</dimen>
     <dimen name="fab_margin">24dp</dimen>
 
-    <dimen name="list_rv_padding_bottom">14dp</dimen>
+    <dimen name="list_rv_padding_bottom">8dp</dimen>
+    <dimen name="list_rv_padding_top">4dp</dimen>
 
     <dimen name="toolbar_ctl_margin_end">64dp</dimen>
     <dimen name="toolbar_ctl_margin_start">48dp</dimen>
 
-    <dimen name="list_image_height">200dp</dimen>
-
     <dimen name="app_bar_elevation">4dp</dimen>
+    <dimen name="list_image_height">200dp</dimen>
 
 </resources>

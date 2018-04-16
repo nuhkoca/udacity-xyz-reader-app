@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -15,10 +14,13 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.xyzreader.R;
-import com.example.xyzreader.adapter.Adapter;
+import com.example.xyzreader.adapter.ArticleAdapter;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.UpdaterService;
 import com.example.xyzreader.util.ColumnCalculator;
@@ -37,8 +39,9 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     private long mBackPressed;
 
-    private static Parcelable mLayoutManagerState;
-    private static final String LAYOUT_MANAGER_STATE = "LAYOUT_MANAGER_STATE";
+    private static int index = -1;
+    private static int top = -1;
+    private GridLayoutManager gridLayoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +53,6 @@ public class ArticleListActivity extends AppCompatActivity implements
 
         if (savedInstanceState == null) {
             refresh();
-        } else {
-            mLayoutManagerState = savedInstanceState.getParcelable(LAYOUT_MANAGER_STATE);
-            mRecyclerView.getLayoutManager().onRestoreInstanceState(mLayoutManagerState);
         }
 
         getSupportLoaderManager().initLoader(0, null, this);
@@ -66,7 +66,7 @@ public class ArticleListActivity extends AppCompatActivity implements
         mRecyclerView = findViewById(R.id.recycler_view);
 
         int columnCount = ColumnCalculator.getOptimalNumberOfColumn(this);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, columnCount);
+        gridLayoutManager = new GridLayoutManager(this, columnCount);
         mRecyclerView.setLayoutManager(gridLayoutManager);
     }
 
@@ -144,9 +144,9 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
-        Adapter adapter = new Adapter(cursor);
-        adapter.setHasStableIds(true);
-        mRecyclerView.setAdapter(adapter);
+        ArticleAdapter articleAdapter = new ArticleAdapter(cursor);
+        articleAdapter.setHasStableIds(true);
+        mRecyclerView.setAdapter(articleAdapter);
     }
 
     @Override
@@ -158,7 +158,19 @@ public class ArticleListActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
-        mLayoutManagerState = mRecyclerView.getLayoutManager().onSaveInstanceState();
+        // downscaling of actionBarHeight to correct scroll to the last item
+        TypedValue typedValue = new TypedValue();
+        int actionBarHeight = 0;
+
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(typedValue.data, getResources().getDisplayMetrics());
+        }
+
+        index = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
+        Log.d("INDEX", String.valueOf(index));
+
+        View v = mRecyclerView.getChildAt(0);
+        top = (v == null) ? 0 : (v.getTop() - mRecyclerView.getPaddingTop() - actionBarHeight);
     }
 
     @Override
@@ -166,12 +178,9 @@ public class ArticleListActivity extends AppCompatActivity implements
         super.onResume();
 
         getSupportLoaderManager().restartLoader(0, null, this);
-    }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putParcelable(LAYOUT_MANAGER_STATE, mLayoutManagerState);
-
-        super.onSaveInstanceState(outState);
+        if (index != -1) {
+            gridLayoutManager.scrollToPositionWithOffset(index, top);
+        }
     }
 }

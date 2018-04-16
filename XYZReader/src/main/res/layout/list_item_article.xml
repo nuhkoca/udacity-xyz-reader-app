@@ -9,11 +9,12 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <com.example.xyzreader.util.DynamicHeightNetworkImageView
+        <ImageView
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
             android:layout_height="@dimen/list_image_height"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:contentDescription="@null" />
 
         <TextView
             android:id="@+id/article_title"
