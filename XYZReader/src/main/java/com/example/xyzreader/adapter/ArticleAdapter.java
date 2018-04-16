@@ -1,7 +1,6 @@
 package com.example.xyzreader.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
@@ -24,8 +23,8 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
+import com.example.xyzreader.callback.IArticleItemClickListener;
 import com.example.xyzreader.data.ArticleLoader;
-import com.example.xyzreader.data.ItemsContract;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,6 +36,7 @@ import static com.android.volley.VolleyLog.TAG;
 
 public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
     private Cursor mCursor;
+    private IArticleItemClickListener mIArticleItemClickListener;
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.sss", Locale.ENGLISH);
     // Use default locale format
@@ -44,8 +44,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
     // Most time functions can only handle 1902 - 2037
     private GregorianCalendar START_OF_EPOCH = new GregorianCalendar(2, 1, 1);
 
-    public ArticleAdapter(Cursor cursor) {
-        mCursor = cursor;
+    public ArticleAdapter(Cursor mCursor, IArticleItemClickListener mIArticleItemClickListener) {
+        this.mCursor = mCursor;
+        this.mIArticleItemClickListener = mIArticleItemClickListener;
     }
 
     @Override
@@ -67,8 +68,10 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                context.startActivity(new Intent(Intent.ACTION_VIEW,
-                        ItemsContract.Items.buildItemUri(getItemId(vh.getAdapterPosition()))));
+                mIArticleItemClickListener.onClick(getItemId(vh.getAdapterPosition())
+                        ,mCursor.getString(ArticleLoader.Query.TITLE)
+                        ,mCursor.getString(ArticleLoader.Query.AUTHOR)
+                        ,mCursor.getString(ArticleLoader.Query.PHOTO_URL));
             }
         });
 

@@ -1,18 +1,8 @@
-<FrameLayout android:layout_width="match_parent"
+<LinearLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:baselineAligned="false"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <include layout="@layout/toolbar_main" />
-
-        <LinearLayout android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:baselineAligned="false">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -96,7 +86,7 @@
                                 android:background="@color/secondaryTextColor"/>
 
                             <View
-                                android:layout_width="50dp"
+                                android:layout_width="30dp"
                                 android:layout_height="1dp"
                                 android:layout_gravity="center"
                                 android:layout_marginTop="72dp"
@@ -125,20 +115,3 @@
                 </LinearLayout>
 
             </LinearLayout>
-
-        </LinearLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/share_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:clickable="true"
-        android:focusable="true"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_share"
-        android:elevation="@dimen/fab_elevation"
-        android:translationZ="@dimen/fab_press_translation_z"
-        android:layout_gravity="bottom|end"/>
-
-</FrameLayout>

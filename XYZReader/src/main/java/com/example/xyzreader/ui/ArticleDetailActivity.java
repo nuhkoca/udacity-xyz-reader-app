@@ -1,17 +1,26 @@
 package com.example.xyzreader.ui;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.app.ShareCompat;
 import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
@@ -30,6 +39,16 @@ public class ArticleDetailActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_detail);
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
+
         if (!getResources().getBoolean(R.bool.isLand)) {
             hideStatusBarOnly();
         }
@@ -39,17 +58,60 @@ public class ArticleDetailActivity extends AppCompatActivity
         if (getIntent() != null && getIntent().getData() != null) {
             mStartId = ItemsContract.Items.getItemId(getIntent().getData());
         }
+
+        setupUI();
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
+    private void setupUI() {
+        String title = getIntent().getStringExtra("title");
+        String imageUrl = getIntent().getStringExtra("image");
+        final String author = getIntent().getStringExtra("author");
+
+        FloatingActionButton share_fab = findViewById(R.id.share_fab);
+        share_fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(ArticleDetailActivity.this)
+                        .setType("text/plain")
+                        .setText(String.format(getString(R.string.action_share_text),
+                                author))
+                        .getIntent(), getString(R.string.action_share)));
+            }
+        });
+
+        CollapsingToolbarLayout titleView = findViewById(R.id.article_title);
+
+        if (!getResources().getBoolean(R.bool.isLand)) {
+            titleView.setTitle(title);
+        }
+
+        ImageView mPhotoView = findViewById(R.id.poster);
+
+        if (!getResources().getBoolean(R.bool.isLand)) {
+            prepareImage(mPhotoView, imageUrl);
+        }
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemThatWasClicked = item.getItemId();
+
+        switch (itemThatWasClicked) {
+            case android.R.id.home:
+                setResult(RESULT_OK);
+                onBackPressed();
+                return true;
+
+            default:
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @NonNull
@@ -110,5 +172,12 @@ public class ArticleDetailActivity extends AppCompatActivity
             decorWindow.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             decorWindow.setStatusBarColor(Color.TRANSPARENT);
         }
+    }
+
+    private void prepareImage(ImageView mPhotoView, String imageUrl) {
+        Glide.with(getApplicationContext())
+                .asBitmap()
+                .load(imageUrl)
+                .into(mPhotoView);
     }
 }

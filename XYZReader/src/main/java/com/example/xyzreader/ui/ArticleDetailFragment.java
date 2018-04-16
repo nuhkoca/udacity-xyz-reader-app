@@ -1,22 +1,17 @@
 package com.example.xyzreader.ui;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
-import android.support.v4.app.ShareCompat;
 import android.support.v4.content.Loader;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
@@ -40,7 +35,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
-import java.util.Objects;
 
 /**
  * A fragment representing a single Article detail screen. This fragment is
@@ -107,33 +101,6 @@ public class ArticleDetailFragment extends Fragment implements
                              Bundle savedInstanceState) {
         mRootView = inflater.inflate(R.layout.fragment_article_detail, container, false);
 
-        Toolbar toolbar = mRootView.findViewById(R.id.toolbar);
-
-        if (getResources().getBoolean(R.bool.isLand)) {
-            toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_material);
-        }
-
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (getActivity() != null) {
-                    getActivity().onBackPressed();
-                }
-            }
-        });
-
-        FloatingActionButton share_fab = mRootView.findViewById(R.id.share_fab);
-        share_fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                    startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(Objects.requireNonNull(getActivity()))
-                            .setType("text/plain")
-                            .setText(String.format(getString(R.string.action_share_text),
-                                    mCursor.getString(ArticleLoader.Query.AUTHOR)))
-                            .getIntent(), getString(R.string.action_share)));
-            }
-        });
-
         return mRootView;
     }
 
@@ -153,7 +120,6 @@ public class ArticleDetailFragment extends Fragment implements
             return;
         }
 
-        CollapsingToolbarLayout titleView = mRootView.findViewById(R.id.article_title);
         final TextView articleTitleLand = mRootView.findViewById(R.id.article_title_land);
         TextView bylineView = mRootView.findViewById(R.id.article_byline);
         bylineView.setMovementMethod(new LinkMovementMethod());
@@ -168,12 +134,9 @@ public class ArticleDetailFragment extends Fragment implements
             mRootView.setVisibility(View.VISIBLE);
             mRootView.animate().alpha(1);
 
-            if (!getResources().getBoolean(R.bool.isLand)) {
-                titleView.setTitle(mCursor.getString(ArticleLoader.Query.TITLE));
-            } else {
+            if (getResources().getBoolean(R.bool.isLand)) {
                 articleTitleLand.setText(mCursor.getString(ArticleLoader.Query.TITLE));
             }
-
 
             Date publishedDate = parsePublishedDate();
             if (!publishedDate.before(START_OF_EPOCH.getTime())) {
@@ -196,10 +159,8 @@ public class ArticleDetailFragment extends Fragment implements
 
             if (getResources().getBoolean(R.bool.isLand)) {
                 prepareImage(cvDetailLand, articleTitleLand, mPhotoView);
-            } else {
-                prepareImage(mPhotoView);
             }
-        }else {
+        } else {
             mRootView.setVisibility(View.GONE);
         }
     }
@@ -254,37 +215,32 @@ public class ArticleDetailFragment extends Fragment implements
     }
 
     private void prepareImage(final CardView cvDetailLand, final TextView articleTitleLand, ImageView mPhotoView) {
-        Glide.with(getActivity().getApplicationContext())
-                .asBitmap()
-                .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
-                .listener(new RequestListener<Bitmap>() {
-                    @Override
-                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                        return false;
-                    }
+        if (getActivity() != null) {
+            Glide.with(getActivity().getApplicationContext())
+                    .asBitmap()
+                    .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
+                    .listener(new RequestListener<Bitmap>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                            return false;
+                        }
 
-                    @Override
-                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                        Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
-                            @Override
-                            public void onGenerated(@NonNull Palette palette) {
-                                if (palette.getDominantSwatch() != null) {
-                                    cvDetailLand.setCardBackgroundColor(palette.getDominantSwatch().getRgb());
-                                    articleTitleLand.setTextColor(palette.getDominantSwatch().getBodyTextColor());
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                            Palette.from(resource).generate(new Palette.PaletteAsyncListener() {
+                                @Override
+                                public void onGenerated(@NonNull Palette palette) {
+                                    if (palette.getDominantSwatch() != null) {
+                                        cvDetailLand.setCardBackgroundColor(palette.getDominantSwatch().getRgb());
+                                        articleTitleLand.setTextColor(palette.getDominantSwatch().getBodyTextColor());
+                                    }
                                 }
-                            }
-                        });
+                            });
 
-                        return false;
-                    }
-                })
-                .into(mPhotoView);
-    }
-
-    private void prepareImage(ImageView mPhotoView) {
-        Glide.with(getActivity().getApplicationContext())
-                .asBitmap()
-                .load(mCursor.getString(ArticleLoader.Query.PHOTO_URL))
-                .into(mPhotoView);
+                            return false;
+                        }
+                    })
+                    .into(mPhotoView);
+        }
     }
 }

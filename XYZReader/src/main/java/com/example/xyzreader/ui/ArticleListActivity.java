@@ -14,14 +14,14 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.widget.Toast;
 
 import com.example.xyzreader.R;
 import com.example.xyzreader.adapter.ArticleAdapter;
+import com.example.xyzreader.callback.IArticleItemClickListener;
 import com.example.xyzreader.data.ArticleLoader;
+import com.example.xyzreader.data.ItemsContract;
 import com.example.xyzreader.data.UpdaterService;
 import com.example.xyzreader.util.ColumnCalculator;
 
@@ -31,7 +31,7 @@ import com.example.xyzreader.util.ColumnCalculator;
  * touched, lead to a {@link ArticleDetailActivity} representing item details. On tablets, the
  * activity presents a grid of items as cards.
  */
-public class ArticleListActivity extends AppCompatActivity implements
+public class ArticleListActivity extends AppCompatActivity implements IArticleItemClickListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -42,6 +42,8 @@ public class ArticleListActivity extends AppCompatActivity implements
     private static int index = -1;
     private static int top = -1;
     private GridLayoutManager gridLayoutManager;
+
+    private static final int ACTIVITY_REQUEST_CODE = 1453;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +146,7 @@ public class ArticleListActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> cursorLoader, Cursor cursor) {
-        ArticleAdapter articleAdapter = new ArticleAdapter(cursor);
+        ArticleAdapter articleAdapter = new ArticleAdapter(cursor, this);
         articleAdapter.setHasStableIds(true);
         mRecyclerView.setAdapter(articleAdapter);
     }
@@ -158,19 +160,10 @@ public class ArticleListActivity extends AppCompatActivity implements
     protected void onPause() {
         super.onPause();
 
-        // downscaling of actionBarHeight to correct scroll to the last item
-        TypedValue typedValue = new TypedValue();
-        int actionBarHeight = 0;
-
-        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
-            actionBarHeight = TypedValue.complexToDimensionPixelSize(typedValue.data, getResources().getDisplayMetrics());
-        }
-
         index = gridLayoutManager.findFirstCompletelyVisibleItemPosition();
-        Log.d("INDEX", String.valueOf(index));
 
         View v = mRecyclerView.getChildAt(0);
-        top = (v == null) ? 0 : (v.getTop() - mRecyclerView.getPaddingTop() - actionBarHeight);
+        top = (v == null) ? 0 : (v.getTop() - mRecyclerView.getPaddingTop());
     }
 
     @Override
@@ -182,5 +175,17 @@ public class ArticleListActivity extends AppCompatActivity implements
         if (index != -1) {
             gridLayoutManager.scrollToPositionWithOffset(index, top);
         }
+    }
+
+    @Override
+    public void onClick(long articleId, String title, String author, String imageUrl) {
+        Intent detailIntent = new Intent(ArticleListActivity.this, ArticleDetailActivity.class);
+        detailIntent.setAction(Intent.ACTION_VIEW);
+        detailIntent.setData(ItemsContract.Items.buildItemUri(articleId));
+        detailIntent.putExtra("title", title);
+        detailIntent.putExtra("author", author);
+        detailIntent.putExtra("image", imageUrl);
+
+        startActivityForResult(detailIntent, ACTIVITY_REQUEST_CODE);
     }
 }

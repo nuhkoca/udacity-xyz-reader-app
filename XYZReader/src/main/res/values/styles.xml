@@ -66,12 +66,6 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
-
-    <!-- Toolbar Style -->
-    <style name="ToolBarWithNavigationBack">
-        <item name="navigationIcon" tools:ignore="PrivateResource">@drawable/abc_ic_ab_back_material</item>
-    </style>
-
     <!-- List CardView Style -->
     <style name="ListCardViewAppearance">
         <item name="android:layout_margin">2dp</item>
