@@ -6,15 +6,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.xyzreader.R;
@@ -42,8 +44,6 @@ public class ArticleListActivity extends AppCompatActivity implements IArticleIt
     private static int index = -1;
     private static int top = -1;
     private GridLayoutManager gridLayoutManager;
-
-    private static final int ACTIVITY_REQUEST_CODE = 1453;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,12 +83,7 @@ public class ArticleListActivity extends AppCompatActivity implements IArticleIt
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSwipeRefreshLayout.setRefreshing(false);
-                    }
-                }, 1500);
+                refresh();
             }
         });
     }
@@ -178,7 +173,7 @@ public class ArticleListActivity extends AppCompatActivity implements IArticleIt
     }
 
     @Override
-    public void onClick(long articleId, String title, String author, String imageUrl) {
+    public void onClick(long articleId, String title, String author, String imageUrl, ImageView thumbnail) {
         Intent detailIntent = new Intent(ArticleListActivity.this, ArticleDetailActivity.class);
         detailIntent.setAction(Intent.ACTION_VIEW);
         detailIntent.setData(ItemsContract.Items.buildItemUri(articleId));
@@ -186,6 +181,17 @@ public class ArticleListActivity extends AppCompatActivity implements IArticleIt
         detailIntent.putExtra("author", author);
         detailIntent.putExtra("image", imageUrl);
 
-        startActivityForResult(detailIntent, ACTIVITY_REQUEST_CODE);
+        if (!getResources().getBoolean(R.bool.isLand)) {
+            detailIntent.putExtra("image-transition", ViewCompat.getTransitionName(thumbnail));
+
+            ActivityOptionsCompat activityOptionsCompat = ActivityOptionsCompat
+                    .makeSceneTransitionAnimation(this,
+                            thumbnail,
+                            ViewCompat.getTransitionName(thumbnail));
+
+            startActivity(detailIntent, activityOptionsCompat.toBundle());
+        } else {
+            startActivity(detailIntent);
+        }
     }
 }

@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -71,7 +72,8 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                 mIArticleItemClickListener.onClick(getItemId(vh.getAdapterPosition())
                         ,mCursor.getString(ArticleLoader.Query.TITLE)
                         ,mCursor.getString(ArticleLoader.Query.AUTHOR)
-                        ,mCursor.getString(ArticleLoader.Query.PHOTO_URL));
+                        ,mCursor.getString(ArticleLoader.Query.PHOTO_URL)
+                        ,vh.thumbnailView);
             }
         });
 
@@ -136,6 +138,9 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHold
                     }
                 })
                 .into(holder.thumbnailView);
+
+        ViewCompat.setTransitionName(holder.thumbnailView,
+                "article-thumbnail" + holder.getAdapterPosition());
     }
 
     @Override

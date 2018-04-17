@@ -2,10 +2,13 @@ package com.example.xyzreader.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
@@ -16,14 +19,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.xyzreader.R;
 import com.example.xyzreader.data.ArticleLoader;
 import com.example.xyzreader.data.ItemsContract;
+import com.flaviofaria.kenburnsview.KenBurnsView;
 
 /**
  * An activity representing a single Article detail screen, letting you swipe between articles.
@@ -38,9 +47,17 @@ public class ArticleDetailActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article_detail);
+        supportPostponeEnterTransition();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
         ActionBar actionBar = getSupportActionBar();
 
@@ -73,8 +90,7 @@ public class ArticleDetailActivity extends AppCompatActivity
             public void onClick(View view) {
                 startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(ArticleDetailActivity.this)
                         .setType("text/plain")
-                        .setText(String.format(getString(R.string.action_share_text),
-                                author))
+                        .setText(String.format(getString(R.string.action_share_text), author))
                         .getIntent(), getString(R.string.action_share)));
             }
         });
@@ -85,16 +101,35 @@ public class ArticleDetailActivity extends AppCompatActivity
             titleView.setTitle(title);
         }
 
-        ImageView mPhotoView = findViewById(R.id.poster);
+        final KenBurnsView mPhotoView = findViewById(R.id.poster);
+        mPhotoView.pause();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mPhotoView.setTransitionName(getIntent().getStringExtra("image-transition"));
+        }
 
         if (!getResources().getBoolean(R.bool.isLand)) {
             prepareImage(mPhotoView, imageUrl);
         }
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mPhotoView.resume();
+            }
+        }, 1000);
     }
 
     @Override
     public void onBackPressed() {
+        supportFinishAfterTransition();
         super.onBackPressed();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return super.onSupportNavigateUp();
     }
 
     @Override
@@ -103,7 +138,10 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         switch (itemThatWasClicked) {
             case android.R.id.home:
-                setResult(RESULT_OK);
+                onBackPressed();
+                return true;
+
+            case R.id.homeAsUp:
                 onBackPressed();
                 return true;
 
@@ -174,10 +212,37 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
     }
 
-    private void prepareImage(ImageView mPhotoView, String imageUrl) {
+    private void prepareImage(final ImageView photoView, String imageUrl) {
         Glide.with(getApplicationContext())
                 .asBitmap()
                 .load(imageUrl)
-                .into(mPhotoView);
+                .listener(new RequestListener<Bitmap>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                        supportStartPostponedEnterTransition();
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                        onScheduledStartPostponedTransition(photoView);
+                        return false;
+                    }
+                })
+                .into(photoView);
+    }
+
+    public void onScheduledStartPostponedTransition(final ImageView photoView) {
+        photoView.getViewTreeObserver().addOnPreDrawListener(
+                new ViewTreeObserver.OnPreDrawListener() {
+                    @Override
+                    public boolean onPreDraw() {
+                        photoView.getViewTreeObserver().removeOnPreDrawListener(this);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            startPostponedEnterTransition();
+                        }
+                        return true;
+                    }
+                });
     }
 }

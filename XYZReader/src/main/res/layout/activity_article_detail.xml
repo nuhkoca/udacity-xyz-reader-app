@@ -28,6 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:tint="@color/detailTint"
+                android:scaleType="centerCrop"
                 android:fitsSystemWindows="true"/>
 
             <android.support.v7.widget.Toolbar
