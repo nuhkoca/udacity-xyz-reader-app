@@ -103,11 +103,12 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         final KenBurnsView mPhotoView = findViewById(R.id.poster);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                && !getResources().getBoolean(R.bool.isLand)) {
-            mPhotoView.pause();
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mPhotoView.setTransitionName(getIntent().getStringExtra("image-transition"));
+        }
+
+        if (!getResources().getBoolean(R.bool.isLand)){
+            mPhotoView.pause();
 
             prepareImage(mPhotoView, imageUrl);
 
