@@ -102,22 +102,22 @@ public class ArticleDetailActivity extends AppCompatActivity
         }
 
         final KenBurnsView mPhotoView = findViewById(R.id.poster);
-        mPhotoView.pause();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && !getResources().getBoolean(R.bool.isLand)) {
+            mPhotoView.pause();
+
             mPhotoView.setTransitionName(getIntent().getStringExtra("image-transition"));
-        }
 
-        if (!getResources().getBoolean(R.bool.isLand)) {
             prepareImage(mPhotoView, imageUrl);
-        }
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mPhotoView.resume();
-            }
-        }, 1000);
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mPhotoView.resume();
+                }
+            }, 1000);
+        }
     }
 
     @Override
