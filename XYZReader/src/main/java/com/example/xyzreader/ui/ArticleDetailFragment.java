@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.text.Html;
@@ -127,7 +128,11 @@ public class ArticleDetailFragment extends Fragment implements
         ImageView mPhotoView = mRootView.findViewById(R.id.poster);
         final CardView cvDetailLand = mRootView.findViewById(R.id.cvDetailLand);
 
-        bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
+        if (getActivity() != null) {
+            bodyView.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.Roboto_Regular));
+            bylineView.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.Roboto_Medium));
+            articleTitleLand.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.Roboto_Regular));
+        }
 
         if (mCursor != null) {
             mRootView.setAlpha(0);

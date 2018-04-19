@@ -14,6 +14,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.ShareCompat;
 import android.support.v4.content.Loader;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -108,7 +109,7 @@ public class ArticleDetailActivity extends AppCompatActivity
             mPhotoView.setTransitionName(getIntent().getStringExtra("image-transition"));
         }
 
-        if (!getResources().getBoolean(R.bool.isLand)){
+        if (!getResources().getBoolean(R.bool.isLand)) {
             mPhotoView.pause();
 
             prepareImage(mPhotoView, imageUrl);
