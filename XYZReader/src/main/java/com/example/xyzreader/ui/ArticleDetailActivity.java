@@ -1,5 +1,6 @@
 package com.example.xyzreader.ui;
 
+import android.animation.Animator;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -23,6 +24,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -86,6 +89,11 @@ public class ArticleDetailActivity extends AppCompatActivity
         final String author = getIntent().getStringExtra("author");
 
         FloatingActionButton share_fab = findViewById(R.id.share_fab);
+
+        Animation animation = AnimationUtils.loadAnimation(this, R.animator.fab_state_list_anim);
+        animation.setStartOffset(0);
+        share_fab.setAnimation(animation);
+
         share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

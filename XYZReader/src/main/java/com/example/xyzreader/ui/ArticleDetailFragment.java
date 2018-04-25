@@ -3,7 +3,6 @@ package com.example.xyzreader.ui;
 import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -129,9 +128,9 @@ public class ArticleDetailFragment extends Fragment implements
         final CardView cvDetailLand = mRootView.findViewById(R.id.cvDetailLand);
 
         if (getActivity() != null) {
-            bodyView.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.Roboto_Regular));
-            bylineView.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.Roboto_Medium));
-            articleTitleLand.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.Roboto_Regular));
+            bodyView.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.roboto_regular));
+            bylineView.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.roboto_medium));
+            articleTitleLand.setTypeface(ResourcesCompat.getFont(getActivity(), R.font.roboto_regular));
         }
 
         if (mCursor != null) {
