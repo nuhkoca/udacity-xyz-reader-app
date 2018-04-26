@@ -1,6 +1,6 @@
 # XYZ Reader Starter Code
 
-![App Logo](https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
+![App Logo](https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/XYZReader/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
 This repository stores the starter code for the XYZ Reader project in Udacity's Android Nanodegree.
 
@@ -28,21 +28,21 @@ In this project, you will redesign an app to follow the Material Design guidelin
 
 <p align="left">
 <img src="https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/art/old-port-main.png" height="500"/>
-<img src="https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/art/old-land-main.png" height="500"/>
+<img src="https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/art/old-land-main.png" height="500" width="587"/>
 </p>
 
 ### New Main Appearance
 
 <p align="left">
 <img src="https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/art/new-port-main.png" height="500"/>
-<img src="https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/art/new-land-main.png" height="500"/>
+<img src="https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/art/new-land-main.png" height="500" width="587"/>
 </p>
 
 ### Old Detail Appearance
 
 <p align="left">
 <img src="https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/art/old-port-detail.png" height="500"/>
-<img src="https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/art/old-land-detail.png" height="500"/>
+<img src="https://github.com/nuhkoca/udacity-xyz-reader-app/blob/master/art/old-land-detail.png" height="500" width="587"/>
 </p>
 
 ### New Detail Appearance
