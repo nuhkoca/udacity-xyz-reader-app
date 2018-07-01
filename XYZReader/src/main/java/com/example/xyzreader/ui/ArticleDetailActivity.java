@@ -1,6 +1,8 @@
 package com.example.xyzreader.ui;
 
 import android.animation.Animator;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -90,9 +92,9 @@ public class ArticleDetailActivity extends AppCompatActivity
 
         FloatingActionButton share_fab = findViewById(R.id.share_fab);
 
-        Animation animation = AnimationUtils.loadAnimation(this, R.animator.fab_state_list_anim);
-        animation.setStartOffset(0);
-        share_fab.setAnimation(animation);
+        AnimatorSet animatorSet = (AnimatorSet) AnimatorInflater.loadAnimator(this, R.animator.fab_state_list_anim);
+        animatorSet.setTarget(share_fab);
+        animatorSet.start();
 
         share_fab.setOnClickListener(new View.OnClickListener() {
             @Override
